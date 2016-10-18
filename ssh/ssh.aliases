@@ -1,0 +1,87 @@
+# -*- shell-script -*-
+
+#################
+# LOGIN ALIASES #
+#################
+
+alias ssh='ssh -A'
+
+# ALCF
+alias challenger='ssh jonmon@challenger.alcf.anl.gov'
+alias eureka='ssh jonmon@eureka.alcf.anl.gov'
+alias intrepid='ssh jonmon@intrepid.alcf.anl.gov'
+alias surveyor='ssh jonmon@surveyor.alcf.anl.gov'
+
+# CI machines
+alias beagle='ssh jonmon@login.beagle.ci.uchicago.edu'
+alias bridled='ssh jonmon@bridled.ci.uchicago.edu'
+alias ucci='ssh jonmon@login.ci.uchicago.edu'
+alias communicado='ssh jonmon@communicado.ci.uchicago.edu'
+alias pads='ssh jonmon@login.pads.ci.uchicago.edu'
+alias sandbox='ssh jonmon@sandbox.beagle.ci.uchicago.edu'
+
+# Cray Marketing
+alias crow='ssh p01327@crow.cray.com'
+alias raven='ssh p01534@raven.cray.com'
+# Fusion
+alias fusion='ssh jonmon@fusion.lcrc.anl.gov'
+
+# GlobusOnline
+alias globusonline='ssh -t jonmon@cli.globusonline.org'
+
+# MCS machines: 64-bit
+alias churn='ssh jonmon@churn.mcs.anl.gov'
+alias crank='ssh jonmon@crank.mcs.anl.gov'
+alias crush='ssh jonmon@crush.mcs.anl.gov'
+alias grind='ssh jonmon@grind.mcs.anl.gov'
+alias mcs='ssh jonmon@login.mcs.anl.gov'
+alias steamroller='ssh jonmon@steamroller.mcs.anl.gov'
+alias stomp='ssh jonmon@stomp.mcs.anl.gov'
+alias thrash='ssh jonmon@thrash.mcs.anl.gov'
+alias trounce='ssh jonmon@trounce.mcs.anl.gov'
+alias thwomp='ssh jonmon@thwomp.mcs.anl.gov'
+alias vanquish='ssh jonmon@vanquish.mcs.anl.gov'
+# MCS machines: 32-bit
+alias octagon='ssh jonmon@octagon.mcs.anl.gov'
+alias octopus='ssh jonmon@octopus.mcs.anl.gov'
+
+# TACC machines
+alias clarksville='ssh jonmon@clarksville.tacc.utexas.edu'
+alias lonestar='ssh jonmon@lonestar.tacc.utexas.edu'
+alias longhorn='ssh jonmon@longhorn.tacc.utexas.edu'
+alias ranger='ssh jonmon@ranger.tacc.utexas.edu'
+alias spur='ssh jonmon@spur.tacc.utexas.edu'
+
+# UTCS machines
+alias utcs='ssh jonmon@linux.cs.utexas.edu'
+
+#UTCS machines: 64-bit
+# group camera
+alias canon='ssh jonmon@canon.cs.utexas.edu'
+alias hassleblad='ssh jonmon@hasselblad.cs.utexas.edu'
+alias leica='ssh jonmon@leica.cs.utexas.edu'
+alias mamiya='ssh jonmon@mamiya.cs.utexas.edu'
+alias minolta='ssh jonomn@minolta.cs.utexas.edu'
+alias minox='ssh jonmon@minox.cs.utexas.edu'
+alias nikon='ssh jonmon@nikon.cs.utexas.edu'
+alias olympus='ssh jonmon@olympus.cs.utexas.edu'
+alias pentax='ssh jonmon@pentax.cs.utexas.edu'
+alias polaroid='ssh jonmon@polaroid.cs.utexas.edu'
+
+# group sins
+alias envy='ssh jonmon@envy.cs.utexas.edu'
+alias gluttony='ssh jonmon@gluttony.cs.utexas.edu'
+alias greed='ssh jonmon@greed.cs.utexas.edu'
+alias lust='ssh jonmon@lust.cs.utexas.edu'
+alias pride='ssh jonmon@pride.cs.utexas.edu'
+alias sloth='ssh jonmon@sloth.cs.utexas.edu'
+alias wrath='ssh jonmon@wrath.cs.utexas.edu'
+
+# UTCS machines: 32-bit
+# group virtues
+alias charity='ssh jonmon@charity.cs.utexas.edu'
+alias chastity='ssh jonmon@chastity.cs.utexas.edu'
+alias humility='ssh jonmon@humility.cs.utexas.edu'
+alias kindness='ssh jonmon@kindness.cs.utexas.edu'
+alias patience='ssh jonmon@patience.cs.utexas.edu'
+alias temperance='ssh jonmon@temperance.cs.utexas.edu'

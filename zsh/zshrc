@@ -1,0 +1,52 @@
+# -*- shell-script -*-
+
+# Where the dotfiles are located
+export DOTFILES_HOME=${HOME}/Library/dotfiles
+
+autoload -Uz compinit
+compinit
+
+# Source global zsh config files, if they exist
+[ -f /etc/zshenv ] && source /etc/zshenv
+[ -f /etc/zshrc ] && source /etc/zshrc
+
+# Source boxen env file if it exists
+[ -f /opt/boxen/env.sh ] && source /opt/boxen/env.sh
+
+# source the zsh config files, if they exist
+[ -f ${DOTFILES_HOME}/zsh/zsh-aliases.zsh ] && source ${DOTFILES_HOME}/zsh/zsh-aliases.zsh
+[ -f ${DOTFILES_HOME}/zsh/zsh-elasticsearch.zsh ] && source ${DOTFILES_HOME}/zsh/zsh-elasticsearch.zsh
+[ -f ${DOTFILES_HOME}/zsh/zsh-functions.zsh ] && source ${DOTFILES_HOME}/zsh/zsh-functions.zsh
+[ -f ${DOTFILES_HOME}/zsh/zsh-prompt.zsh ] && source ${DOTFILES_HOME}/zsh/zsh-prompt.zsh
+[ -f ${DOTFILES_HOME}/zsh/zsh-keybindings.zsh ] && source ${DOTFILES_HOME}/zsh/zsh-keybindings.zsh
+[ -f ${DOTFILES_HOME}/zsh/zsh-history.zsh ] && source ${DOTFILES_HOME}/zsh/zsh-history.zsh
+[ -f ${DOTFILES_HOME}/zsh/zsh-misc.zsh ] && source ${DOTFILES_HOME}/zsh/zsh-misc.zsh
+[ -f ${DOTFILES_HOME}/zsh/zsh-completions.zsh ] && source ${DOTFILES_HOME}/zsh/zsh-completions.zsh
+[ -f ${DOTFILES_HOME}/zsh/zsh-homebrew.zsh ] && source ${DOTFILES_HOME}/zsh/zsh-homebrew.zsh
+[ -f ${DOTFILES_HOME}/zsh/zsh-path.zsh ] && source ${DOTFILES_HOME}/zsh/zsh-path.zsh
+[ -f ${DOTFILES_HOME}/zsh/zsh-less.zsh ] && source ${DOTFILES_HOME}/zsh/zsh-less.zsh
+
+# source the ssh aliases file, if they exist
+[ -f ${DOTFILES_HOME}/ssh/ssh.aliases ] && source ${DOTFILES_HOME}/ssh/ssh.aliases
+
+# source the shell configurations for git, if it exists
+[ -f ${DOTFILES_HOME}/git/git-shell.cf ] && source ${DOTFILES_HOME}/git/git-shell.cf
+
+# source the shell configurations for maven, if it exists
+[ -f ${DOTFILES_HOME}/maven/mvn-shell.cf ] && source ${DOTFILES_HOME}/maven/mvn-shell.cf
+
+# Source rvm, if it exists
+[ -f ${HOME}/.rvm/scripts/rvm ] && source ${HOME}/.rvm/scripts/rvm
+
+# Add RVM to PATH for scripting if it exists
+[ -d ${HOME}/.rvm/bin ] && PATH=${HOME}/.rvm/bin:${PATH}
+
+# AWS configurations
+[ -f ${HOME}/.aws_credentials ] && export AWS_CREDENTIAL_FILE=${HOME}/.aws_credentials
+
+# LOVE DEM EMACS
+export EDITOR=emacs
+
+export HOSTFILE=$HOME/.ssh/known_hosts
+
+java18

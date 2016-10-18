@@ -1,0 +1,378 @@
+; -*- Lisp -*-
+
+;; -------- setup environment --------
+;; set up my path
+(add-to-list 'load-path "~/.elisp")
+(add-to-list 'load-path "~/.elisp/org-7.8.03/lisp/") ;; for org-mode
+(add-to-list 'load-path "~/.elisp/zencoding/")       ;; for zencoding-mode
+(add-to-list 'load-path "~/.elisp/php-mode-1.5.0/")  ;; for php-mode
+(add-to-list 'load-path "~/.elisp/nodejs-mode")      ;; for nodejs-mode
+(add-to-list 'load-path "~/.elisp/ruby-mode")         ;; for ruby mode
+(setq byte-compile-warnings nil)
+
+;; return 't if available, else 'nil
+(defun available (feature-name)
+  (locate-library (symbol-name feature-name)))
+
+;; helper functions
+(defun require-if-available (feature-name)
+  (if (available feature-name)
+      (require feature-name)))
+
+;; scrolling functions
+(defun up-by-one () (interactive) (scroll-up 1))
+(defun down-by-one () (interactive) (scroll-down 1))
+
+;; -------- configuration --------
+;; highlight long lines tails
+(setq whitespace-style '((face trailing lines-tail) whitespace-line-column 80))
+
+;; ---- color setup ----
+(set-foreground-color "white")
+(set-background-color "black")
+
+;; ---- wide-column ----
+;; color the current line depending on how long it is
+(require-if-available 'wide-column)
+
+;; ---- cl ----
+(require 'cl)
+
+;; ---- compile functions ----
+(require 'compile)
+
+;; ---- unique buffer names ----
+(require 'uniquify)
+
+;; ---- external interpreter (shell) ----
+(require 'comint)
+
+;; ---- asciidoc mode ----
+(when (available 'doc-mode)
+  (require 'doc-mode)
+  (autoload 'doc-mode "doc-mode" nil t)
+  (add-to-list 'auto-mode-alist '("\\.adoc\\'" . doc-mode)))
+;; ---- css-mode ----
+(when (available 'css-mode)
+  (require 'css-mode)
+  (autoload 'css-mode "css-mode" nil t)
+  (add-to-list 'auto-mode-alist '("\\.css\\'" . css-mode)))
+
+;; ---- js2-mode----
+(when (available 'js2-mode)
+  (require 'js2-mode)
+  (autoload 'js2-mode "js2-mode" nil t)
+  (add-to-list 'auto-mode-alist '("\\.js\\'" . js2-mode)))
+
+;; ---- scss-mode ----
+(when (available 'scss-mode)
+  (require 'scss-mode)
+  (autoload 'scss-mode "sass-mode" nil t)
+  (add-to-list 'auto-mode-alist '("\\.scss\\'" . scss-mode)))
+
+;; ---- zencoding-mode ----
+(when (available 'zencoding-mode)
+  (require 'zencoding-mode)
+  (add-hook 'sgml-mode-hook 'zencoding-mode))
+
+
+;; ---- php mode ----
+(when (available 'php-mode)
+  (require 'php-mode)
+  (autoload 'php-mode "php-mode" nil t)
+  (add-to-list 'auto-mode-alist '("\\.php\\'" . php-mode)))
+
+;; ---- org-mode (ONLY used for file completion) ----
+(when (available 'org-install)
+  (require 'org-install)
+  (setq org-outline-path-complete-in-steps nil)
+  (setq ido-max-directory-size 100000)
+  (ido-mode (quote both))
+)
+;; ---- nodejs-mode ----
+(when (available 'nodejs-mode)
+  (require 'nodejs-mode)
+)
+
+;; ---- ruby-mode ----
+(when (available 'ruby-mode)
+  (require 'ruby-mode)
+  (autoload 'ruby-mode "ruby-mode" nil t)
+  (add-to-list 'auto-mode-alist '("\\.rb\\'" . ruby-mode))
+)
+
+;; ---- nox mouse scrolling ----
+(unless window-system
+  (require 'mouse)
+  (xterm-mouse-mode t)
+  (global-set-key (kbd "<mouse-4>") 'down-by-one)
+  (global-set-key (kbd "<mouse-5>") 'up-by-one)
+  (defun track-mouse (e))
+  (setq mouse-sel-mode t))
+
+;; ---- google style ----
+(when (available 'google-c-style)
+  (require 'google-c-style)
+  (add-hook 'c-mode-common-hook 'google-set-c-style)
+  (add-hook 'c-mode-common-hook 'google-make-newline-indent))
+
+;; ---- flyspell ----
+(when (available 'flyspell)
+  (require 'flyspell)
+  (add-hook 'text-mode-hook 'flyspell-mode)
+  (add-hook 'org-mode-hook  'flyspell-mode)
+  (add-hook 'c-mode-common-hook 'flyspell-prog-mode)
+  (add-hook 'matlab-mode-hook   'flyspell-prog-mode)
+  (add-hook 'sh-mode-hook       'flyspell-prog-mode)
+  (add-hook 'python-mode-hook   'flyspell-prog-mode)
+  (add-hook 'perl-mode-hook     'flyspell-prog-mode))
+
+;; -------- set config variables --------
+;; maximize decorations
+(setq font-lock-maximum-decoration t)
+
+;; show trailing whitespace on everyline in a hard to miss color
+(setq show-trailing-whitespace t)
+
+;; sets the buffer local variable, indicate-empty-lines which shows empty lines
+;; at the end of the file with a special fringe
+(setq default-indicate-empty-lines t)
+
+;; disable the startup message
+(setq inhibit-startup-message t)
+
+;; avoid trojans!
+;;   something like eval:
+;;     (add-hook 'local-write-file-hooks 'foobar)
+;;   gets evaluated if put in a buffer somewhere.  same with
+;;     foo: (+ 4 6)
+;;   which makes a variable called foo have value 10
+(setq enable-local-variables 'query)
+(setq enable-local-eval 'query)
+
+;; disable the bell
+(setq ring-bell-function (lambda () nil))
+
+;; make duplicate buffer names unique.  instead of Makefile and Makefile<2>
+;; you now get Makefile|dir1 and Makefile|dir2
+(setq uniquify-buffer-name-style 'post-forward)
+
+;; killing read only text copies it into the kill-ring by doesn't bitch about
+;; modifying a read-only buffer
+(setq kill-read-only-ok t)
+
+;; Have button 2 paste at cursor not at the mouse click.
+(setq mouse-yank-at-point t)
+
+;; Make all "yes or no" prompts become "y or n"
+(fset 'yes-or-no-p 'y-or-n-p)
+
+;; don't wrap long lines
+(set-default 'truncate-lines t)
+
+;; always terminate files with a newline
+(setq require-final-newline t)
+
+;; save position on scroll
+(setq scroll-preserve-screen-position t)
+
+;; don't scroll past the end of a file
+(setq next-line-add-newlines nil)
+
+;; how far back should emacs look for a matching paranethesis?
+(setq show-paren-style 'parenthesis)
+(setq blink-matching-paren-distance 51200)
+
+;; -------- Functions --------
+
+;; force a refresh on the syntatic highlighting
+(defun rfont ()
+  "get the font faces back to normal"
+  (interactive)
+  (font-lock-fontify-buffer))
+
+;; visit what the symlink targets rather than clobbering the symlink
+(defun visit-target-instead ()
+  "Replace this buffer with a buffer visiting the link target."
+  (interactive)
+  (if buffer-file-name
+      (let ((target (file-symlink-p buffer-file-name)))
+	(if target
+	    (find-alternate-file target)))
+    (error "Not visiting a file")))
+
+;; remove ^M's from a file
+(defun dos2unix ()
+  "Remove all ^M's in buffer."
+  (interactive)
+  (save-excursion
+    (goto-char (point-min))
+    (while (re-search-forward "\r" (point-max) t nil)
+      (replace-match "" nil t))))
+
+(defun point-to-top ()
+  "Put the point on top line of the window."
+  (interactive)
+  (move-to-window-line 0))
+
+(defun point-to-bottom ()
+  "Put the point on bottom line of the window."
+  (interactive)
+  (move-to-window-line -1))
+
+(defun indent-whole-buffer ()
+  "indent whole buffer"
+  (interactive)
+  (indent-region (point-min) (point-max) nil))
+
+(defun* get-closest-pathname (&optional (file "Makefile"))
+  "Determine the pathname of the first instance of FILE starting from the current directory towards root.
+This may not do the correct thing in presence of links. If it does not find FILE, then it shall return the name
+of FILE in the current directory, suitable for creation"
+  (let ((root (expand-file-name "/")))
+    (expand-file-name file
+		      (loop
+		       for d = default-directory then (expand-file-name ".." d)
+		       if (file-exists-p (expand-file-name file d))
+		       return d
+		       if (equal d root)
+		       return nil))))
+
+;; -------- autoloads --------
+(autoload 'c++-mode  "cc-mode"            "C++ Editing Mode" t)
+(autoload 'c-mode    "cc-mode"            "C Editing Mode"   t)
+(autoload 'objc-mode "cc-mode"            "Objective C Editing Mode" t)
+(autoload 'text-mode "indented-text-mode" "Indented Text Editing Mode" t)
+
+;; -------- modes --------
+(setq auto-mode-alist
+      (append '(("\\.cpp$"   . c++-mode)
+                ("\\.hpp$"   . c++-mode)
+                ("\\.c$"     . c-mode)
+                ("\\.h$"     . c-mode)
+                ("\\.sql$"   . c-mode)
+                ("\\.m$"     . matlab-mode)
+                ("\\.pl$"    . perl-mode)
+                ("\\.py$"    . python-mode)
+                ("\\.sh$"    . shell-script-mode)
+                ("\\.make$"  . makefile-mode)
+                ("makefile$" . makefile-mode)
+                ("Makefile$" . makefile-mode)
+                ("\\.java$"  . java-mode))
+	      auto-mode-alist))
+
+;; -------- common hooks --------
+(add-hook 'find-file-hooks 'visit-target-instead)
+(add-hook 'text-mode-hook 'turn-on-auto-fill)
+
+;; ---- compile closest makefile ----
+(add-hook 'c-mode-hook (lambda () (set (make-local-variable 'compile-command) (format "make -f %s" (get-closest-pathname)))))
+
+;; ensure that shell's are started with unique names
+(add-hook 'shell-mode-hook (lambda () (rename-uniquely)))
+
+;; -------- turn on/off features --------
+;; dynamic command completion on M-!
+(define-key minibuffer-local-map [tab] 'comint-dynamic-complete)
+
+;; turn off backup creation
+(setq make-backup-files nil)
+
+;; every buffer starts out with syntax highlighting
+(global-font-lock-mode t)
+
+;; make sure we can see what line/column we're on at all times
+(line-number-mode 1)
+(column-number-mode 1)
+
+;; keep the current region highlighted until we modify the buffer
+(transient-mark-mode t)
+
+;; auto-revert on by default so we can follow logs that change
+(global-auto-revert-mode 1)
+
+;; view images inline when visited
+(if (display-images-p)
+    (auto-image-file-mode t))
+
+;; eliminate the blinking cursor so we don't hose emacs over slow X connections
+(blink-cursor-mode nil)
+
+;; show matching parens
+(show-paren-mode t)
+
+;; show which function we're in for code editing
+(which-func-mode t)
+
+;; -------- global key bindings --------
+;; make occur an easy to access thing
+(global-set-key (kbd "C-c o") 'occur)
+
+;; quick goto command
+(global-set-key (kbd "M-g") 'goto-line)
+
+(global-set-key (kbd "M-,") 'point-to-top)
+(global-set-key (kbd "M-.") 'point-to-bottom)
+
+(global-set-key (kbd "M-@") 'shell-command)
+
+;; info pages
+(global-set-key (kbd "M-i") 'man)
+
+;; never quit without being asked
+(global-set-key (kbd "C-x C-c")
+		(function
+		 (lambda () (interactive)
+		   (cond ((y-or-n-p "Quit editor? ")
+			  (save-buffers-kill-emacs))))))
+
+;; buffer jumping keys
+(global-set-key (kbd "M-o") 'other-window)
+(global-set-key (kbd "M-p") 'other-window-backward)
+
+;; bind M-k to compile
+(global-set-key (kbd "M-k") 'compile)
+
+;; bind M-j to debug
+(global-set-key (kbd "M-j") 'gdb)
+
+;; unset the fill width key
+(global-unset-key (kbd "C-x f"))
+;; bind C-x M-f to fill the current active region
+(global-set-key (kbd "C-x f") 'fill-region)
+
+;; delete trailing whitespace from end of lines (does not delete end-of-line characters) binded to C-x C-d
+(global-set-key (kbd "C-x C-d") 'delete-trailing-whitespace)
+
+;; indents the region according to the current indent rules
+(global-set-key (kbd "C-x C-t") 'indent-whole-buffer)
+
+;; -------- miscellaneous --------
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(large-file-warning-threshold nil)
+ '(show-trailing-whitespace t))
+
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(custom-comment-face ((((class grayscale color) (background dark)) (:foreground "red" :slant normal))) t)
+ '(font-lock-comment-face ((nil (:foreground "red" :slant oblique))))
+ '(my-long-line-face ((((class color)) (:background "gray10"))) t)
+ '(my-tab-face ((((class color)) (:background "grey10"))) t)
+ '(my-trailing-space-face ((((class color)) (:background "gray10"))) t))
+
+;; stop the compile command from prompting each time
+(setq compilation-read-command nil)
+;; default it to make -j -C ~gthomsen/code/ael
+(setq compile-command "cd `git rev-parse --show-toplevel` && make")
+
+;; display the time in the mode line
+;; included last to verify that the entire .emacs file has loaded properly
+(setq display-time-day-and-date t)
+(display-time)

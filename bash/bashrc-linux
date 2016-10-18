@@ -1,0 +1,357 @@
+#SOURCE GLOBAL DEFINITIONS
+[ -f /etc/bashrc ] && source /etc/bashrc
+[ -f /etc/profile.d/bash-completion ] && source /etc/profile.d/bash-completion
+[ -f /opt/osg/setup.sh ] && source /opt/osg/setup.sh
+[ -f $HOME/Library/Swift/apps/SwiftMontage/setup.sh ] && source $HOME/Library/Swift/apps/SwiftMontage/setup.sh
+
+function tidy()
+{
+    /bin/bash -c "rm -rvf *~ .*~ \#*"
+}
+
+function ff() { find . -type f -iname '*'$*'*' -ls ; }
+
+function fe() { find . -type f -iname '*'$1'*' -exec "${2:-file}" {} \;  ; }
+
+function cuttail() # cut last n lines in file, 10 by default
+{
+    nlines=${2:-10}
+    sed -n -e :a -e "1,${nlines}!{P;N;D;};N;ba" $1
+}
+
+function lowercase()  # move filenames to lowercase
+{
+    for file ; do
+        filename=${file##*/}
+        case "$filename" in
+        */*) dirname==${file%/*} ;;
+        *) dirname=.;;
+        esac
+        nf=$(echo $filename | tr A-Z a-z)
+        newname="${dirname}/${nf}"
+        if [ "$nf" != "$filename" ]; then
+            mv "$file" "$newname"
+            echo "lowercase: $file --> $newname"
+        else
+            echo "lowercase: $file not changed."
+        fi
+    done
+}
+
+function swap()         # swap 2 filenames around
+{
+    local TMPFILE=tmp.$$
+    mv "$1" $TMPFILE
+    mv "$2" "$1"
+    mv $TMPFILE "$2"
+}
+
+
+function my_ps() { ps $@ -u $USER -o pid,%cpu,%mem,bsdtime,command ; }
+function pp() { my_ps f | awk '!/awk/ && $0~var' var=${1:-".*"} ; }
+
+
+function killps()   # kill by process name
+{
+    local pid pname sig="-TERM"   # default signal
+    if [ "$#" -lt 1 ] || [ "$#" -gt 2 ]; then
+        echo "Usage: killps [-SIGNAL] pattern"
+        return;
+    fi
+    if [ $# = 2 ]; then sig=$1 ; fi
+    for pid in $(my_ps| awk '!/awk/ && $0~pat { print $1 }' pat=${!#} ) ; do
+        pname=$(my_ps | awk '$1~var { print $5 }' var=$pid )
+        if ask "Kill process $pid <$pname> with signal $sig?"
+            then kill $sig $pid
+        fi
+    done
+}
+
+function ii()   # get current host related info
+{
+    echo -e "\nYou are logged on ${RED}$HOST"
+    echo -e "\nAdditional information:$NC " ; uname -a
+    echo -e "\n${RED}Users logged on:$NC " ; who
+    echo -e "\n${RED}Current date :$NC " ; date
+    echo -e "\n${RED}Machine stats :$NC " ; uptime
+    echo -e "\n${RED}Memory stats :$NC " ; free
+    my_ip 2>&- ;
+    echo -e "\n${RED}Local IP Address :$NC" ; echo ${MY_IP:-"Not connected"}
+    echo -e "\n${RED}ISP Address :$NC" ; echo ${MY_ISP:-"Not connected"}
+    echo
+}
+
+# Misc utilities:
+
+function repeat()       # repeat n times command
+{
+    local i max
+    max=$1; shift;
+    for ((i=1; i <= max ; i++)); do  # --> C-like syntax
+        eval "$@";
+    done
+}
+
+function ask()
+{
+    echo -n "$@" '[y/n] ' ; read ans
+    case "$ans" in
+        y*|Y*) return 0 ;;
+        *) return 1 ;;
+    esac
+}
+
+_get_longopts () 
+{ 
+    $1 --help | sed  -e '/--/!d' -e 's/.*--\([^[:space:].,]*\).*/--\1/'| \
+grep ^"$2" |sort -u ;
+}
+
+_longopts_func ()
+{
+    case "${2:-*}" in
+	-*)	;;
+	*)	return ;;
+    esac
+
+    case "$1" in
+	\~*)	eval cmd="$1" ;;
+	*)	cmd="$1" ;;
+    esac
+    COMPREPLY=( $(_get_longopts ${1} ${2} ) )
+}
+
+_killall ()
+{
+    local cur prev
+    COMPREPLY=()
+    cur=${COMP_WORDS[COMP_CWORD]}
+
+    # get a list of processes (the first sed evaluation
+    # takes care of swapped out processes, the second
+    # takes care of getting the basename of the process)
+    COMPREPLY=( $( /usr/bin/ps -u $USER -o comm  | \
+        sed -e '1,1d' -e 's#[]\[]##g' -e 's#^.*/##'| \
+        awk '{if ($0 ~ /^'$cur'/) print $0}' ))
+
+    return 0
+}
+
+# This is a 'universal' completion function - it works when commands have
+# a so-called 'long options' mode , ie: 'ls --all' instead of 'ls -a'
+_my_command()
+{
+    local cur func cline cspec
+    
+    COMPREPLY=()
+    cur=${COMP_WORDS[COMP_CWORD]}
+
+    if [ $COMP_CWORD = 1 ]; then
+	COMPREPLY=( $( compgen -c $cur ) )
+    elif complete -p ${COMP_WORDS[1]} &>/dev/null; then
+	cspec=$( complete -p ${COMP_WORDS[1]} )
+	if [ "${cspec%%-F *}" != "${cspec}" ]; then
+	
+	    # set current token number to 1 less than now
+	    COMP_CWORD=$(( $COMP_CWORD - 1 ))
+	    # get function name
+	    func=${cspec#*-F }
+	    func=${func%% *}
+	    # get current command line minus initial command
+	    cline="${COMP_LINE#$1 }"
+	    # split current command line tokens into array
+		COMP_WORDS=( $cline )
+	    $func $cline
+	elif [ "${cspec#*-[abcdefgjkvu]}" != "" ]; then
+	    # complete -[abcdefgjkvu]
+	    #func=$( echo $cspec | sed -e 's/^.*\(-[abcdefgjkvu]\).*$/\1/' )
+	    func=$( echo $cspec | sed -e 's/^complete//' -e 's/[^ ]*$//' )
+	    COMPREPLY=( $( eval compgen $func $cur ) )
+	elif [ "${cspec#*-A}" != "$cspec" ]; then
+	    # complete -A <type>
+	    func=${cspec#*-A }
+	func=${func%% *}
+	COMPREPLY=( $( compgen -A $func $cur ) )
+	fi
+    else
+	COMPREPLY=( $( compgen -f $cur ) )
+    fi
+}
+
+
+complete -A hostname   rsh rcp telnet rlogin r ftp ping disk
+complete -A export     printenv
+complete -A variable   export local readonly unset
+complete -A enabled    builtin
+complete -A alias      alias unalias
+complete -A function   function
+complete -A user       su mail finger
+
+complete -A helptopic  help     # currently same as builtins
+complete -A shopt      shopt
+complete -A stopped -P '%' bg
+complete -A job -P '%'     fg jobs disown
+
+complete -A directory  mkdir rmdir
+complete -A directory   -o default cd
+
+# Compression
+complete -f -o default -X '*.+(zip|ZIP)'  zip
+complete -f -o default -X '!*.+(zip|ZIP)' unzip
+complete -f -o default -X '*.+(z|Z)'      compress
+complete -f -o default -X '!*.+(z|Z)'     uncompress
+complete -f -o default -X '*.+(gz|GZ)'    gzip
+complete -f -o default -X '!*.+(gz|GZ)'   gunzip
+complete -f -o default -X '*.+(bz2|BZ2)'  bzip2
+complete -f -o default -X '!*.+(bz2|BZ2)' bunzip2
+# Postscript,pdf,dvi.....
+complete -f -o default -X '!*.ps'  gs ghostview ps2pdf ps2ascii
+complete -f -o default -X '!*.dvi' dvips dvipdf xdvi dviselect dvitype
+complete -f -o default -X '!*.pdf' acroread pdf2ps xpdf evince okular
+complete -f -o default -X '!*.+(pdf|ps)' gv
+complete -f -o default -X '!*.texi*' makeinfo texi2dvi texi2html texi2pdf
+complete -f -o default -X '!*.tex' vi pdflatex tex latex slitex
+complete -f -o default -X '!*.lyx' lyx
+complete -f -o default -X '!*.+(txt|tex|c|cpp|swift|log|properties|java)' vi
+complete -f -o default -X '!*.+(htm*|HTM*)' lynx html2ps
+# Multimedia
+complete -f -o default -X '!*.+(jp*g|gif|xpm|png|bmp)' xv gimp
+complete -f -o default -X '!*.+(mp3|MP3)' mpg123 mpg321
+complete -f -o default -X '!*.+(ogg|OGG)' ogg123
+
+complete -f -o default -X '!*.pl'  perl perl5
+complete -f -o default -X '!*.sh'  sh
+complete  -o default -F _longopts_func configure bash
+complete  -o default -F _longopts_func wget id info a2ps ls recode
+complete -F _make_targets -X '+($*|*.[cho])' make gmake pmake
+complete -F _cvs cvs
+complete -F _killall killall killps
+complete -o default -F _my_command nohup exec eval trace truss strace sotruss gdb
+complete -o default -F _my_command command type which man nice
+
+ulimit -S -c 0		# Don't want any coredumps
+
+red='\e[0;31m'
+RED='\e[1;31m'
+blue='\e[0;34m'
+BLUE='\e[1;34m'
+cyan='\e[0;36m'
+CYAN='\e[1;36m'
+NC='\e[0m'              # No Color
+
+
+if [ "${BASH_VERSION%.*}" \< "2.05" ]; then
+    echo "You will need to upgrade to version 2.05 for programmable completion"
+   # return
+fi
+
+function pre_prompt {
+newPWD="${PWD}"
+user="whoami"
+host=$(echo -n $HOSTNAME | sed -e "s/[\.].*//")
+datenow=$(date "+%a, %d %b %y")
+let promptsize=$(echo -n "┌($user@$host ddd., DD mmm YY)(`date \"+%H:%M\"`)┐" \
+                 | wc -c | tr -d " ")
+let fillsize=${COLUMNS}-${promptsize}
+fill=""
+while [ "$fillsize" -gt "0" ] 
+do 
+    fill="${fill}─"
+	let fillsize=${fillsize}-1
+done
+if [ "$fillsize" -lt "0" ]
+then
+    let cutt=3-${fillsize}
+    newPWD="...$(echo -n $PWD | sed -e "s/\(^.\{$cutt\}\)\(.*\)/\2/")"
+fi
+
+}
+
+export black="\[\033[0;38;5;0m\]"
+export red="\[\033[0;38;5;1m\]"
+export orange="\[\033[0;38;5;130m\]"
+export green="\[\033[0;38;5;2m\]"
+export yellow="\[\033[0;38;5;3m\]"
+export blue="\[\033[0;38;5;4m\]"
+export bblue="\[\033[0;38;5;12m\]"
+export magenta="\[\033[0;38;5;55m\]"
+export cyan="\[\033[0;38;5;6m\]"
+export white="\[\033[0;38;5;7m\]"
+export coldblue="\[\033[0;38;5;33m\]"
+export smoothblue="\[\033[0;38;5;111m\]"
+export iceblue="\[\033[0;38;5;45m\]"
+export turqoise="\[\033[0;38;5;50m\]"
+export smoothgreen="\[\033[0;38;5;42m\]"
+
+export SVN_EDITOR=emacs
+export HALT_SOUND=no
+
+export HOSTFILE=$HOME/.ssh/known_hosts
+
+export HISTCONTROL=erasedups
+export HISTSIZE=10000
+shopt -s histappend
+
+PS1="[\[\033[1;32m\]\u@\h\[\033[0m\]: \w]\$ "
+
+# LS ALIASES
+alias ll='ls -l -F'
+alias lm='ls -al -F |more'    # pipe through 'more'
+alias la='ls -Al -F'               # show hidden files
+alias ls='ls -hF --color=auto'	# add colors for filetype recognition
+alias lx='ls -lXB -F'              # sort by extension
+alias lk='ls -lS -F'              # sort by size
+alias lc='ls -lc -F'		# sort by change time  
+alias lu='ls -lu -F'		# sort by access time   
+alias lt='ls -lt -F'              # sort by date
+
+alias tree='tree -Csu'     # nice alternative to 'recursive ls'
+
+LS_COLORS=${LS_COLORS}:'di=1;34:ln=1;4;36:ex=1;4;35'
+LS_COLORS=${LS_COLORS}:'*.xml=1;91;100:*.a=1;4;37'
+LS_COLORS=${LS_COLORS}:'*.h=36:*.c=93:*.java=93:*.f=1;30:*.class=4;32:*.o=4;32:*.S=32'
+
+#TAILORING LESSS
+alias more='less'
+export PAGER='less'
+export LESSCHARSET='latin1'
+export LESSOPEN='|/usr/bin/lesspipe.sh %s 2>&-'
+export LESS='-i -N -w  -z-4 -g -e -M -X -F -R -P%t?f%f :stdin .?pb%pb\%:?lbLine %lb:?bbByte %bb:-...'
+
+#OTHER ALIASES
+alias cp='cp -i'
+alias mv='mv -i'
+alias sl='ln -s'
+alias rm='rm -iv'
+alias du='du -kh'
+alias df='df -kTh'
+alias myip="curl whatismyip.org && echo"
+alias mkdir='mkdir -p'
+alias which='type --all'
+alias size\-dir='du -sh'
+alias path='echo -e ${PATH//:/\\n}'
+alias memload='ps -e -orss=,args= | sort -b -k1,1n | pr -TW206'
+alias uname='uname -a'
+alias tail='tail -f'
+
+#QSTAT aliases
+alias active\-jobs='qstat -u jonmon | grep R'
+alias num\-active\-jobs='qstat -u jonmon | grep R | wc -l'
+alias queued\-jobs='qstat -u jonmon | grep Q'
+alias num\-queued\-jobs='qstat -u jonmon | grep Q | wc -l'
+
+# source the ssh alias file, if it exists
+[ -f $HOME/.ssh.aliases ] && source $HOME/.ssh.aliases
+
+GREP_OPTIONS='--color'
+PATH=$HOME/Library/Asciidoc/bin:$HOME/Library/Pygments:$PATH
+SWIFT_LIB=${HOME}/Library/Swift/apps/SwiftMontage/scripts
+SWIFT_HEAP_MAX=4096M
+
+export GREP_OPTIONS
+export PATH
+export LS_COLORS
+export SWIFT_LIB
+export SWIFT_HEAP_MAX
+
+PATH=$PATH:$HOME/.rvm/bin # Add RVM to PATH for scripting

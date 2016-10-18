@@ -1,0 +1,32 @@
+# -*- shell-script -*-
+
+# GIT ENV
+[ -f /usr/bin/ssh ] && export GIT_SSH=/usr/bin/ssh
+[ -d /usr/local/git/bin ] && export PATH=/usr/local/git/bin:${PATH}
+
+# GIT ALIASES
+alias fetch='git fetch'
+alias clone='git clone'
+alias pull='git pull --rebase origin $(git symbolic-ref HEAD 2> /dev/null | cut -d'/' -f3)'
+alias push='git push origin $(git symbolic-ref HEAD 2> /dev/null | cut -d'/' -f3)'
+alias lbranch='git branch -a'
+alias abranch='git co -b'
+alias rdbranch='alias push origin --delete'
+alias co='git checkout'
+alias ci='git commit'
+alias collapse='git rebase -i origin'
+alias sync='git rebase origin/master'
+alias irebase='git rebase -i'
+alias rebase='git rebase'
+alias undo='git undo'
+alias st='git status -sb'
+alias stash='git stash'
+alias unstash='git stash pop'
+alias refork='git refork'
+alias gdiff='git diff'
+alias add='git add'
+alias lgn='git lgn'
+alias log1='git log1'
+alias lg='git lg'
+alias standup='git status --since yesterday'
+alias cherry\-pick='git cherry-pick'

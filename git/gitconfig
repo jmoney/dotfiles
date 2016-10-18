@@ -1,0 +1,105 @@
+[user]
+	name = J$
+	email = jon.monette@gmail.com
+
+[color]
+	diff = auto
+	status = auto
+	branch = auto
+	ui = auto
+
+[merge]
+	tool = vimdiff
+
+[alias]
+    graphviz = "!f() { echo 'digraph git {' ; git log --pretty='format:  %h -> { %p }' \"$@\" | sed 's/[0-9a-f][0-9a-f]*/\"&\"/g' ; echo '}'; }; f"
+
+    st = status
+
+    co = checkout
+
+    ci = commit
+
+    files = show --pretty="format:" --name-only
+
+    log1 = log --pretty=oneline --abbrev-commit --decorate --graph
+
+    lg = log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit --date=relative
+
+    lgn = log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit --date=relative -n10o
+
+    refork = "!refork() { git fetch upstream && git merge upstream/master ; }; refork"
+
+    unstash = stash pop
+
+    # commit and push
+    cpush = "!cpush() { git commit -m $1 && git push ; }; cpush"
+
+    # commit and push
+    cpushall = "!cpushall() { git commit -a -m $1 && git push ; }; cpushall"
+
+    addremote = "!addremote() { git remote add $1 $2 && git fetch $1 ; }; addremote"
+
+    cotag = "!cotag() { git checkout --track -b $2 origin/$1 ; }; cotag"
+
+    # checkout a tag as a branch
+    cotagbr = "!cotagbr() { git checkout $1 ; git checkout -b $2 ; git push origin $2 ; }; cotagbr"
+
+    # checkout a branch into a new local branch
+    cobr = "!checkoutbr() { git checkout --track -b $1 origin/$1 ; }; cobr"
+
+    # revert the last commit
+    undo = "!undo() { git reset HEAD~1 ; }; undo"
+
+    # delete a remote branch
+    rmbr = "!rmbr() { git push origin :$1 ; git branch -D $1 ; }; rmbr"
+
+    # flatten branch
+    flatten = "!flatbr() { git checkout master ; git merge $1 ; git reset origin/master ; git add . ; git add -u ; }; flatbr"
+
+    # create a new (flat) branch from an existing branch
+    newflatbr = "!newflatbr() { git checkout master ; git merge $1 ; git reset origin/master ; git add . ; git add -u ; git push origin master:$2 ; git checkout -t origin/$2 ; }; newflatbr"
+
+    # savana-like commands (experimental)
+    #
+    # cub - Create User Branch
+    # creates a branch with the given name on the origin, creates a local branch to track that one, and switches to it
+    cub = "!cub() { git push origin master:$1 && git checkout -t origin/$1 ; }; cub"
+
+    # sync - Synchronize User Branch
+    # rebase the user branch against the master
+    sync = rebase origin/master
+
+    # shove - Push the current branch, rewriting history if needed.
+    # when "syncing" a user branch against master, we will rewrite history, so we need a command to push that change
+    # "shove" checks that you're not on master before pushing
+    shove = "!s() { BRANCH=`git branch | grep ^* | cut -c 3-` && if [ \"$BRANCH\" != \"master\" ]; then git push origin HEAD --force ; else echo 'not shoving master!' ; fi ; }; s"
+
+    # promote - Promote User Branch
+    # push the current branch to the master branch on the origin (this will fail if it's not fast-forward, which you can resolve by doing a "sync"), and then delete the user branch locally and remotely, switching back to master locally.
+    # note - this command refuses to run against "master", for safety :)
+    promote = "!pr() { BRANCH=`git branch | grep ^* | cut -c 3-` && if [ \"$BRANCH\" != \"master\" ]; then git push origin HEAD:master && git push origin :$BRANCH && git checkout master && git branch -D $BRANCH && git pull ; else echo Skipping promote on master branch. ; fi ; }; pr"
+
+    # collapse commits on branch into a single commit (rewrite history)
+    collapse = rebase -i origin
+
+[credential]
+	helper = osxkeychain
+
+[core]
+	excludesfile = /Users/jmonette/.gitignore_global
+	editor = emacs
+	excludes = /Users/jmonette/.gitignore_global
+
+[difftool "sourcetree"]
+	cmd = opendiff \"$LOCAL\" \"$REMOTE\"
+	path =
+
+[mergetool "sourcetree"]
+	cmd = /Applications/SourceTree.app/Contents/Resources/opendiff-w.sh \"$LOCAL\" \"$REMOTE\" -ancestor \"$BASE\" -merge \"$MERGED\"
+	trustExitCode = true
+
+[apply]
+	whitespace = nowarn
+[push]
+	default = simple

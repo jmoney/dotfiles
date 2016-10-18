@@ -1,0 +1,100 @@
+;; Jon's own additions
+
+;; look at our elisp first
+(add-to-list 'load-path "~/.elisp")
+
+;; delete trailing whitespace from end of lines (does not delete end-of-line characters) binded to C-x C-d
+(global-set-key [(control x) (control d)] 'delete-trailing-whitespace)
+
+;; indents the region according to the modes indent rules binnded to C-x C-t
+(global-set-key [(control x) (control t)]
+                (lambda ()
+                  "indent whole buffer"
+                  (interactive)
+                  (indent-region (point-min) (point-max) nil)))
+
+(global-set-key [(control x) (e)] 'end-of-buffer)
+
+(global-set-key [(control x) (a)] 'beginning-of-buffer)
+
+;; Use ansi mode instead of the shell mode. This allows the PS1 variable
+;; to be read without out mangling the shell prompt.
+(autoload 'ansi-color-for-comint-mode-on "ansi-color" nil t)
+(add-hook 'shell-mode-hook 'ansi-color-for-comint-mode-on)
+
+(global-set-key [(meta s) (a)] 'shell)
+
+;; comment region
+(global-set-key[(control x) (c)] 'comment-region)
+
+;; uncomment region
+(global-set-key[(control x) (x)] 'uncomment-region)
+
+;; -------------------------- autoloaded packages -------------------------
+(autoload 'doc-mode "~/.elisp/doc-mode-1.1/doc-mode.el" "asciidoc mode" t)
+(autoload 'zencoding-mode "~/.elisp/zencoding/zencoding-mode.el" "zencoding mode" t)
+(autoload 'conf-javaprop-mode "conf-javaprop-mode" t)
+(require 'zencoding-mode)
+
+;; Mode Options
+(setq auto-mode-alist
+      (append '(
+                ("\\.swift"          . c-mode)
+                ("\\.properties"     . conf-javaprop-mode)
+                ("\\.adoc"           . doc-mode)
+                ) auto-mode-alist))
+
+
+;; ignore completion for .class
+(setq completion-ignored-extensions (cons ".class" completion-ignored-extensions))
+
+(setq load-path (cons "org-7.8.09/lisp" load-path))
+(require 'org-install)
+
+(add-to-list 'auto-mode-alist '("\\.org\\'". org-mode))
+(global-set-key "\C-cl" 'org-store-link)
+(global-set-key "\C-cc" 'org-capture)
+(global-set-key "\C-ca" 'org-agenda)
+(global-set-key "\C-cb" 'org-iswitchb)
+
+;;; Ruby/Rails development
+
+;; RVM support
+;; Ruby Version Manager
+(require 'rvm)
+(rvm-use-default)
+
+;; automatically add 'end' after class, module, def etc.
+;; automatically pair braces, single and double quotes
+(require 'ruby-electric)
+(add-hook 'ruby-mode-hook 'ruby-electric-mode)
+
+;; Rails support
+;; jump to corresping model/view/controller,
+;; find file in project, etc
+(require 'rinari)
+(add-hook 'ruby-mode-hook 'rinari-minor-mode)
+
+;; whitespace-mode for Ruby code
+;; helps with cleaning out unnecessary white space
+(add-hook 'ruby-mode-hook 'whitespace-mode)
+
+;; rspec
+;; run specs in a compilation buffer
+(add-to-list 'load-path "~/.elisp/vendor/rspec-mode")
+(require 'rspec-mode)
+
+;; cucumber
+;; run features in a compilation buffer
+(add-to-list 'load-path "~/.elisp/vendor/cucumber-mode")
+(require 'feature-mode)
+(add-to-list 'auto-mode-alist '("\.feature$" . feature-mode))
+
+;; syntax highlighting etc. for HAML
+(require 'haml-mode)
+
+;; display strings representing colors with
+;; the color they represent as background
+(add-to-list 'load-path "~/.elisp/vendor/jd-el")
+(require 'rainbow-mode)
+(add-hook 'css-mode-hook 'rainbow-mode)
