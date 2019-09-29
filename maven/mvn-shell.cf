@@ -11,10 +11,4 @@ alias jetty='mvn clean -U jetty:run'
 alias rrepo='rm -rvf ${HOME}/.m2/repository'
 
 # MAVEN ENV
-#export MAVEN_OPTS='-Xms256m -Xmx1024m -XX:+CMSClassUnloadingEnabled -XX:PermSize=64M -XX:MaxPermSize=265M -Dfile.encoding=UTF-8 -javaagent:/Users/jmonette/.m2/repository/org/aspectj/aspectjweaver/1.6.11/aspectjweaver-1.6.11.jar'
 export MAVEN_OPTS='-Xms256m -Xmx1024m -XX:+CMSClassUnloadingEnabled -XX:PermSize=64M -XX:MaxPermSize=265M -Dfile.encoding=UTF-8'
-
-# Use maven2 if available
-if [ -d /usr/share/java/apache-maven-2.2.1/bin ] ; then
-    PATH=/usr/share/java/apache-maven-2.2.1/bin:${PATH}
-fi
