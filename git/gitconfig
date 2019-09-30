@@ -1,6 +1,8 @@
-[user]
-	name = J$
-	email = jon.monette@gmail.com
+[includeIf "gitdir:~/Workspace/Vrbo"]
+    path = ~/.gitconfig-vrbo
+    
+[includeIf "gitdir:~/Workspace/Personal"]
+    path = ~/.gitconfig-personal
 
 [color]
 	diff = auto
