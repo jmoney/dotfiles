@@ -1,6 +1,3 @@
-[includeIf "gitdir:~/Workspace/Vrbo/"]
-    path = ~/.gitconfig-vrbo
-    
 [includeIf "gitdir:~/Workspace/Personal/"]
     path = ~/.gitconfig-personal
 
