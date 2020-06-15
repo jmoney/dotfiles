@@ -1,9 +1,0 @@
-# -*- shell-script -*-
-
-# Source OSG setup files, if they exist
-[ -f /opt/osg/setup.sh ] && source /opt/osg/setup.sh
-
-export SWIFT_MONTAGE=${HOME}/Library/Swift/apps/Montage
-export SWIFT_MONTAGE_WORK=/gpfs/swift/jonmon/Swift/work
-export SWIFT_LIB=${SWIFT_MONTAGE}/scripts
-export SWIFT_HEAP_MAX=1024m

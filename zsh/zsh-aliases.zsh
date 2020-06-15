@@ -34,9 +34,3 @@ alias epoch='python -c "import time; print time.time()"'
 alias epcohdate='ruby -r date -e "puts Time.at($1).to_datetime"'
 alias weather='telnet rainmaker.wunderground.com'
 alias starwars='telnet towel.blinkenlights.nl'
-
-alias java18='export JAVA_HOME=`/usr/libexec/java_home -v 1.8`'
-alias java17='export JAVA_HOME=`/usr/libexec/java_home -v 1.7`'
-alias java16='export JAVA_HOME=`/usr/libexec/java_home -v 1.6`'
-
-alias mvn2='/usr/local/Cellar/maven2/2.2.1/libexec/bin/mvn'

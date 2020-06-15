@@ -1,8 +1,6 @@
 #SOURCE GLOBAL DEFINITIONS
 [ -f /etc/bashrc ] && source /etc/bashrc
 [ -f /etc/profile.d/bash-completion ] && source /etc/profile.d/bash-completion
-[ -f /opt/osg/setup.sh ] && source /opt/osg/setup.sh
-[ -f $HOME/Library/Swift/apps/SwiftMontage/setup.sh ] && source $HOME/Library/Swift/apps/SwiftMontage/setup.sh
 
 function tidy()
 {
@@ -334,24 +332,11 @@ alias memload='ps -e -orss=,args= | sort -b -k1,1n | pr -TW206'
 alias uname='uname -a'
 alias tail='tail -f'
 
-#QSTAT aliases
-alias active\-jobs='qstat -u jonmon | grep R'
-alias num\-active\-jobs='qstat -u jonmon | grep R | wc -l'
-alias queued\-jobs='qstat -u jonmon | grep Q'
-alias num\-queued\-jobs='qstat -u jonmon | grep Q | wc -l'
-
 # source the ssh alias file, if it exists
 [ -f $HOME/.ssh.aliases ] && source $HOME/.ssh.aliases
 
 GREP_OPTIONS='--color'
-PATH=$HOME/Library/Asciidoc/bin:$HOME/Library/Pygments:$PATH
-SWIFT_LIB=${HOME}/Library/Swift/apps/SwiftMontage/scripts
-SWIFT_HEAP_MAX=4096M
 
 export GREP_OPTIONS
 export PATH
 export LS_COLORS
-export SWIFT_LIB
-export SWIFT_HEAP_MAX
-
-PATH=$PATH:$HOME/.rvm/bin # Add RVM to PATH for scripting
