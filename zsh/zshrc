@@ -35,6 +35,9 @@ compinit
 # AWS configurations
 [ -f ${HOME}/.aws_credentials ] && export AWS_CREDENTIAL_FILE=${HOME}/.aws_credentials
 
+# source user settings
+[ -f ${HOME}/.zshrc_user ] && source ${HOME}/.zshrc_user
+
 # LOVE DEM EMACS
 export EDITOR=emacs
 
