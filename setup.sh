@@ -87,16 +87,6 @@ git_config_files()
     else
         echo "$escapecode[1;31mPersonal gitconfig file already exists$escapecode[0m"
     fi
-    
-    echo ""
-    echo "$escapecode[1;33mChecking for gitconfig vrbo file$escapecode[0m"
-    if [[ ! -f ${HOME}/.gitconfig-vrbo ]]
-    then
-        echo "$escapecode[1;32mLinking gitconfig vrbo file$escapecode[0m"
-        ln -s ${HOME}/Library/dotfiles/git/gitconfig-vrbo .gitconfig-vrbo
-    else
-        echo "$escapecode[1;31mVrbo gitconfig file already exists$escapecode[0m"
-    fi
 }
 
 cd ${HOME}
