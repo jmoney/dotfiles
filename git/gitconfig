@@ -1,6 +1,9 @@
 [includeIf "gitdir:~/Workspace/Personal/"]
     path = ~/.gitconfig-personal
 
+[includeIf "gitdir:~/Workspace/Datadotworld/"]
+    path = ~/.gitconfig-datadotworld
+
 [color]
 	diff = auto
 	status = auto
