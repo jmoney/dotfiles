@@ -11,4 +11,4 @@ alias jetty='mvn clean -U jetty:run'
 alias rrepo='rm -rvf ${HOME}/.m2/repository'
 
 # MAVEN ENV
-export MAVEN_OPTS='-Xms256m -Xmx1024m -XX:+CMSClassUnloadingEnabled -XX:PermSize=64M -XX:MaxPermSize=265M -Dfile.encoding=UTF-8'
+export MAVEN_OPTS='-Dfile.encoding=UTF-8'
