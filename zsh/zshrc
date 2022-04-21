@@ -12,7 +12,6 @@ compinit
 
 # source the zsh config files, if they exist
 [ -f ${DOTFILES_HOME}/zsh/zsh-aliases.zsh ] && source ${DOTFILES_HOME}/zsh/zsh-aliases.zsh
-[ -f ${DOTFILES_HOME}/zsh/zsh-elasticsearch.zsh ] && source ${DOTFILES_HOME}/zsh/zsh-elasticsearch.zsh
 [ -f ${DOTFILES_HOME}/zsh/zsh-functions.zsh ] && source ${DOTFILES_HOME}/zsh/zsh-functions.zsh
 [ -f ${DOTFILES_HOME}/zsh/zsh-prompt.zsh ] && source ${DOTFILES_HOME}/zsh/zsh-prompt.zsh
 [ -f ${DOTFILES_HOME}/zsh/zsh-keybindings.zsh ] && source ${DOTFILES_HOME}/zsh/zsh-keybindings.zsh
@@ -31,9 +30,6 @@ compinit
 
 # source the shell configurations for maven, if it exists
 [ -f ${DOTFILES_HOME}/maven/mvn-shell.cf ] && source ${DOTFILES_HOME}/maven/mvn-shell.cf
-
-# AWS configurations
-[ -f ${HOME}/.aws_credentials ] && export AWS_CREDENTIAL_FILE=${HOME}/.aws_credentials
 
 # source user settings
 [ -f ${HOME}/.zshrc_user ] && source ${HOME}/.zshrc_user
