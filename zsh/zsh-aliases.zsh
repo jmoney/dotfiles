@@ -6,7 +6,7 @@ alias la='ls -A'
 alias lla='ls -la | less'
 alias ll='ls -lh'
 alias lm='ll | less'
-if [ -d $(/usr/local/bin/brew --prefix coreutils)/libexec/gnubin ]; then
+if [ -d $(brew --prefix coreutils)/libexec/gnubin ]; then
     alias ls='ls -F --color --group-directories-first'
 fi
 alias lx='ls -lXB'
