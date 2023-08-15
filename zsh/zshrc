@@ -2,6 +2,7 @@
 
 # Where the dotfiles are located
 export DOTFILES_HOME=${HOME}/Library/dotfiles
+export EMAIL_ADDRESS="jon.monette@gmail.com"
 
 autoload -Uz compinit
 compinit
@@ -12,6 +13,7 @@ compinit
 
 # source the zsh config files, if they exist
 [ -f ${DOTFILES_HOME}/zsh/zsh-aliases.zsh ] && source ${DOTFILES_HOME}/zsh/zsh-aliases.zsh
+[ -f ${DOTFILES_HOME}/zsh/zsh-cloudflare.zsh ] && source ${DOTFILES_HOME}/zsh/zsh-cloudflare.zsh
 [ -f ${DOTFILES_HOME}/zsh/zsh-functions.zsh ] && source ${DOTFILES_HOME}/zsh/zsh-functions.zsh
 [ -f ${DOTFILES_HOME}/zsh/zsh-prompt.zsh ] && source ${DOTFILES_HOME}/zsh/zsh-prompt.zsh
 [ -f ${DOTFILES_HOME}/zsh/zsh-keybindings.zsh ] && source ${DOTFILES_HOME}/zsh/zsh-keybindings.zsh
@@ -21,6 +23,7 @@ compinit
 [ -f ${DOTFILES_HOME}/zsh/zsh-homebrew.zsh ] && source ${DOTFILES_HOME}/zsh/zsh-homebrew.zsh
 [ -f ${DOTFILES_HOME}/zsh/zsh-path.zsh ] && source ${DOTFILES_HOME}/zsh/zsh-path.zsh
 [ -f ${DOTFILES_HOME}/zsh/zsh-less.zsh ] && source ${DOTFILES_HOME}/zsh/zsh-less.zsh
+[ -f ${DOTFILES_HOME}/zsh/zsh-openai.zsh ] && source ${DOTFILES_HOME}/zsh/zsh-openai.zsh
 
 # source the ssh aliases file, if they exist
 [ -f ${DOTFILES_HOME}/ssh/ssh.aliases ] && source ${DOTFILES_HOME}/ssh/ssh.aliases
